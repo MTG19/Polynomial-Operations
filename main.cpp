@@ -4,7 +4,7 @@
 using namespace std;
 
 // Function to display a polynomial
-void displayPolynomial(int* pol, int order) {
+void displayPolynomial(int* pol, int order, int constantTerm) {
     bool firstTerm = true;
     for (int i = order; i >= 0; --i) {
         if (pol[i] != 0) {
@@ -19,40 +19,44 @@ void displayPolynomial(int* pol, int order) {
         }
     }
     if (firstTerm) cout << "0";
-    cout << " = 0\n";
+    cout << " = " << constantTerm << "\n";
 }
 
 // Function to add two polynomials
-int* Sum_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderSum) {
+int* Sum_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderSum, int constantTerm1, int constantTerm2, int& constantSum) {
     orderSum = max(order1, order2);
-    int* sum = new int[orderSum + 1]{};
-    for (int i = 0; i <= order1; i++) sum[i] = pol1[i];
+    int* sum = new int[orderSum + 1]{0};
+    for (int i = 0; i <= order1; i++) sum[i] += pol1[i];
     for (int i = 0; i <= order2; i++) sum[i] += pol2[i];
+    constantSum = constantTerm1 + constantTerm2;  // Update constant term
     return sum;
 }
 
-// Function to subtract two polynomials
-int* Difference_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderDiff) {
+// Function to subtract two polynomials (pol2 - pol1)
+int* Difference_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderDiff, int constantTerm1, int constantTerm2, int& constantDiff) {
     orderDiff = max(order1, order2);
-    int* diff = new int[orderDiff + 1]{};
-    for (int i = 0; i <= order1; i++) diff[i] = pol1[i];
-    for (int i = 0; i <= order2; i++) diff[i] -= pol2[i];
+    int* diff = new int[orderDiff + 1]{0};
+    for (int i = 0; i <= order1; i++) diff[i] -= pol1[i];  // Subtract pol1
+    for (int i = 0; i <= order2; i++) diff[i] += pol2[i];  // Add pol2
+    constantDiff = constantTerm2 - constantTerm1;  // Update constant term
     return diff;
 }
 
 // Function to read polynomial input
-void readPolynomial(int*& pol, int& order, istream& input) {
+void readPolynomial(int*& pol, int& order, int& constantTerm, istream& input) {
     input >> order;
+    input >> constantTerm;  // Read the constant term first
     pol = new int[order + 1]{};
-    for (int i = order; i >= 0; i--) {
-        input >> pol[i];  // Read coefficients from highest to lowest degree
+    for (int i = 0; i <= order; i++) {  // Read coefficients from x^0 to x^order
+        input >> pol[i];
     }
 }
 
 int main() {
     int order1, order2;
-    int* pol1;
-    int* pol2;
+    int constantTerm1, constantTerm2;
+    int* pol1 = nullptr;
+    int* pol2 = nullptr;
     int choice;
 
     cout << "Choose input method:\n1. Manual input\n2. Read from file\nEnter choice: ";
@@ -64,11 +68,23 @@ int main() {
 
     if (choice == 1) {
         // Manual input
-        cout << "Enter first polynomial:\n";
-        readPolynomial(pol1, order1, cin);
+        cout << "Enter first polynomial order: ";
+        cin >> order1;
+        cout << "Enter the constant term (after '=') followed by " << (order1 + 1) << " coefficients (from x^0 to x^" << order1 << "): ";
+        pol1 = new int[order1 + 1]{};
+        cin >> constantTerm1;
+        for (int i = 0; i <= order1; i++) {
+            cin >> pol1[i];
+        }
 
-        cout << "Enter second polynomial:\n";
-        readPolynomial(pol2, order2, cin);
+        cout << "Enter second polynomial order: ";
+        cin >> order2;
+        cout << "Enter the constant term (after '=') followed by " << (order2 + 1) << " coefficients (from x^0 to x^" << order2 << "): ";
+        pol2 = new int[order2 + 1]{};
+        cin >> constantTerm2;
+        for (int i = 0; i <= order2; i++) {
+            cin >> pol2[i];
+        }
     } else {
         // File input
         ifstream inputFile;
@@ -81,28 +97,29 @@ int main() {
             cout << "File not found! Please enter a valid filename.\n";
         }
 
-        readPolynomial(pol1, order1, inputFile);
-        readPolynomial(pol2, order2, inputFile);
+        readPolynomial(pol1, order1, constantTerm1, inputFile);
+        readPolynomial(pol2, order2, constantTerm2, inputFile);
 
         inputFile.close();
     }
 
     // Display the polynomials
     cout << "First polynomial: ";
-    displayPolynomial(pol1, order1);
+    displayPolynomial(pol1, order1, constantTerm1);
     cout << "Second polynomial: ";
-    displayPolynomial(pol2, order2);
+    displayPolynomial(pol2, order2, constantTerm2);
 
     // Compute sum and difference
     int orderSum, orderDiff;
-    int* sum = Sum_of_Polynomials(pol1, order1, pol2, order2, orderSum);
-    int* diff = Difference_of_Polynomials(pol1, order1, pol2, order2, orderDiff);
+    int constantSum, constantDiff;
+    int* sum = Sum_of_Polynomials(pol1, order1, pol2, order2, orderSum, constantTerm1, constantTerm2, constantSum);
+    int* diff = Difference_of_Polynomials(pol1, order1, pol2, order2, orderDiff, constantTerm1, constantTerm2, constantDiff);
 
     // Display results
     cout << "Sum of polynomials: ";
-    displayPolynomial(sum, orderSum);
+    displayPolynomial(sum, orderSum, constantSum);
     cout << "Difference of polynomials: ";
-    displayPolynomial(diff, orderDiff);
+    displayPolynomial(diff, orderDiff, constantDiff);
 
     // Free allocated memory
     delete[] pol1;
