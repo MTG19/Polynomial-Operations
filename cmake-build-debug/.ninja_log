@@ -1,0 +1,9 @@
+# ninja log v6
+3	638	7643590234503073	CMakeFiles/Polynomial_Operations.dir/main.cpp.obj	2d391d4c1cda4420
+641	815	7643590240895559	Polynomial_Operations.exe	cba2fae054a437ba
+15	604	7643594556545897	CMakeFiles/Polynomial_Operations.dir/main.cpp.obj	790c04b6dbb13057
+605	693	7643594562435219	Polynomial_Operations.exe	cba2fae054a437ba
+7	613	7643599455108467	CMakeFiles/Polynomial_Operations.dir/main.cpp.obj	790c04b6dbb13057
+614	709	7643599461176377	Polynomial_Operations.exe	cba2fae054a437ba
+7	548	7643601424356292	CMakeFiles/Polynomial_Operations.dir/main.cpp.obj	790c04b6dbb13057
+548	631	7643601429773986	Polynomial_Operations.exe	cba2fae054a437ba
