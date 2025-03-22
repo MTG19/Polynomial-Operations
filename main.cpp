@@ -73,6 +73,7 @@ int main() {
         int constantTerm1, constantTerm2;
         int* pol1 = nullptr;
         int* pol2 = nullptr;
+        bool errorOccurred = false;  // Flag to track if an error occurred
 
         cout << "\nChoose input method:\n1. Manual input\n2. Read from file\nEnter choice: ";
         while (!(cin >> choice) || (choice != 1 && choice != 2)) {
@@ -87,7 +88,7 @@ int main() {
             cin >> order1;
             if (order1 < 0) {
                 cout << "Error: Order cannot be negative.\n";
-                return 1;
+                errorOccurred = true;
             }
             cout << "Enter the constant term (after '=') followed by " << (order1 + 1) << " coefficients (from x^0 to x^" << order1 << "): ";
             pol1 = new int[order1 + 1]{};
@@ -96,7 +97,8 @@ int main() {
                 if (!(cin >> pol1[i])) {
                     cout << "Error: Not enough coefficients provided.\n";
                     delete[] pol1;
-                    return 1;
+                    errorOccurred = true;
+                    break;
                 }
             }
 
@@ -105,7 +107,7 @@ int main() {
             if (order2 < 0) {
                 cout << "Error: Order cannot be negative.\n";
                 delete[] pol1;
-                return 1;
+                errorOccurred = true;
             }
             cout << "Enter the constant term (after '=') followed by " << (order2 + 1) << " coefficients (from x^0 to x^" << order2 << "): ";
             pol2 = new int[order2 + 1]{};
@@ -115,7 +117,8 @@ int main() {
                     cout << "Error: Not enough coefficients provided.\n";
                     delete[] pol1;
                     delete[] pol2;
-                    return 1;
+                    errorOccurred = true;
+                    break;
                 }
             }
         } else {
@@ -141,29 +144,31 @@ int main() {
             inputFile.close();
         }
 
-        // Display the polynomials
-        cout << "\nFirst polynomial: ";
-        displayPolynomial(pol1, order1, constantTerm1);
-        cout << "Second polynomial: ";
-        displayPolynomial(pol2, order2, constantTerm2);
+        if(!errorOccurred) {
+            // Display the polynomials
+            cout << "\nFirst polynomial: ";
+            displayPolynomial(pol1, order1, constantTerm1);
+            cout << "Second polynomial: ";
+            displayPolynomial(pol2, order2, constantTerm2);
 
-        // Compute sum and difference
-        int orderSum, orderDiff;
-        int constantSum, constantDiff;
-        int* sum = Sum_of_Polynomials(pol1, order1, pol2, order2, orderSum, constantTerm1, constantTerm2, constantSum);
-        int* diff = Difference_of_Polynomials(pol1, order1, pol2, order2, orderDiff, constantTerm1, constantTerm2, constantDiff);
+            // Compute sum and difference
+            int orderSum, orderDiff;
+            int constantSum, constantDiff;
+            int* sum = Sum_of_Polynomials(pol1, order1, pol2, order2, orderSum, constantTerm1, constantTerm2, constantSum);
+            int* diff = Difference_of_Polynomials(pol1, order1, pol2, order2, orderDiff, constantTerm1, constantTerm2, constantDiff);
 
-        // Display results
-        cout << "Sum of polynomials: ";
-        displayPolynomial(sum, orderSum, constantSum);
-        cout << "Difference of polynomials: ";
-        displayPolynomial(diff, orderDiff, constantDiff);
+            // Display results
+            cout << "Sum of polynomials: ";
+            displayPolynomial(sum, orderSum, constantSum);
+            cout << "Difference of polynomials: ";
+            displayPolynomial(diff, orderDiff, constantDiff);
 
-        // Free allocated memory
-        delete[] pol1;
-        delete[] pol2;
-        delete[] sum;
-        delete[] diff;
+            // Free allocated memory
+            delete[] pol1;
+            delete[] pol2;
+            delete[] sum;
+            delete[] diff;
+        }
         // Ask the user if they want to perform another operation
         cout << "_________________________________________\n\n"
                 "Do you want to perform another operation? \n1.Yes\n2.No\nEnter choice (1/2): ";
@@ -249,5 +254,50 @@ Second polynomial: 3x^4 + 4x = 8
 Sum of polynomials: 3x^4 + 2x^2 + 7x + 1 = 8
 Difference of polynomials: 3x^4 - 2x^2 + 1x - 1 = 8
 ________________________________________________________________
+Test Case 6: Negative Coefficients
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 -1 3 -2
+Order of second polynomial: 2
+Enter polynomial: 0 2 -1 4
 
+Output:
+First polynomial: -2x^2 + 3x - 1 = 0
+Second polynomial: 4x^2 - 1x + 2 = 0
+Sum of polynomials: 2x^2 + 2x + 1 = 0
+Difference of polynomials: 6x^2 - 4x + 3 = 0
+________________________________________________________________
+Test Case 7: Constant Term is Negative
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 1 3 2 -5
+Order of second polynomial: 2
+Enter polynomial: 0 2 1 4 -3
+
+Output:
+First polynomial: 2x^2 + 3x + 1 = -5
+Second polynomial: 4x^2 + 1x + 2 = -3
+Sum of polynomials: 6x^2 + 4x + 3 = -8
+Difference of polynomials: 2x^2 - 2x + 1 = 2
+________________________________________________________________
+Test Case 8: Negative Order (Invalid Input)
+Input:
+Order of first polynomial: -2
+Enter polynomial: 0 1 3 2 -5
+Order of second polynomial: 2
+Enter polynomial: 0 2 1 4 -3
+
+Output:
+Error: Order cannot be negative.
+________________________________________________________________
+Test Case 9: Insufficient Coefficients
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 1
+Order of second polynomial: 2
+Enter polynomial: 0 2 -1 4
+
+Output:
+Error: Not enough coefficients provided.
+________________________________________________________________
 ***/
