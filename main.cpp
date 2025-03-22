@@ -64,7 +64,9 @@ bool readPolynomial(int*& pol, int& order, int& constantTerm, istream& input) {
 int main() {
     int choice;
     int repeat;
-    cout<<"\nWelcome to Polynomial Operations Program!\n\n";
+    cout<<"\n_________________________________________\n"
+            "Welcome to Polynomial Operations Program!\n"
+            "_________________________________________\n";
 
     do {
         int order1, order2;
@@ -72,7 +74,7 @@ int main() {
         int* pol1 = nullptr;
         int* pol2 = nullptr;
 
-        cout << "Choose input method:\n1. Manual input\n2. Read from file\nEnter choice: ";
+        cout << "\nChoose input method:\n1. Manual input\n2. Read from file\nEnter choice: ";
         while (!(cin >> choice) || (choice != 1 && choice != 2)) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -81,7 +83,7 @@ int main() {
 
         if (choice == 1) {
             // Manual input
-            cout << "Enter first polynomial order: ";
+            cout << "\nEnter first polynomial order: ";
             cin >> order1;
             if (order1 < 0) {
                 cout << "Error: Order cannot be negative.\n";
@@ -121,7 +123,7 @@ int main() {
             ifstream inputFile;
             string filename;
             while (true) {
-                cout << "Enter filename: ";
+                cout << "\nEnter filename: ";
                 cin >> filename;
                 inputFile.open(filename);
                 if (inputFile) break;
@@ -140,7 +142,7 @@ int main() {
         }
 
         // Display the polynomials
-        cout << "First polynomial: ";
+        cout << "\nFirst polynomial: ";
         displayPolynomial(pol1, order1, constantTerm1);
         cout << "Second polynomial: ";
         displayPolynomial(pol2, order2, constantTerm2);
@@ -163,7 +165,9 @@ int main() {
         delete[] sum;
         delete[] diff;
         // Ask the user if they want to perform another operation
-        cout << "Do you want to perform another operation? \n1.Yes\n2.No\nEnter choice (1/2): ";
+        cout << "_________________________________________\n\n"
+                "Do you want to perform another operation? \n1.Yes\n2.No\nEnter choice (1/2): ";
+
         while (!(cin >> repeat) || (repeat != 1 && repeat != 2)) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -172,7 +176,78 @@ int main() {
 
 
     } while (repeat == 1 );
-    cout << "Exiting the Program. Goodbye!\n";
+    cout << "\n_____________________________\n"
+              "Exiting the Program. Goodbye!\n"
+              "_____________________________\n";
 
     return 0;
 }
+/***
+________________________________________________________________
+Test Case 1:
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 1 3 2
+Order of second polynomial: 4
+Enter polynomial: 8 0 4 0 0 3
+
+Output:
+First polynomial: 2x^2 + 3x + 1 = 0
+Second polynomial: 3x^4 + 4x = 8
+Sum of polynomials: 3x^4 + 2x^2 + 7x + 1 = 8
+Difference of polynomials: 3x^4 - 2x^2 + x - 1 = 8
+________________________________________________________________
+Test Case 2:
+Input:
+Order of first polynomial: 3
+Enter polynomial: 0 5 0 1 4
+Order of second polynomial: 3
+Enter polynomial: 0 2 3 0 6
+
+Output:
+First polynomial: 4x^3 + x^2 + 5 = 0
+Second polynomial: 6x^3 + 3x + 2 = 0
+Sum of polynomials: 10x^3 + x^2 + 3x + 7 = 0
+Difference of polynomials: 2x^3 - x^2 + 3x - 3 = 0
+________________________________________________________________
+Test Case 3: Equal Degrees
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 1 3 2
+Order of second polynomial: 2
+Enter polynomial: 0 2 1 4
+
+Output:
+First polynomial: 2x^2 + 3x + 1 = 2
+Second polynomial: 4x^2 + 1x + 2 = 5
+Sum of polynomials: 6x^2 + 4x + 3 = 7
+Difference of polynomials: 2x^2 - 2x + 1 = 3
+________________________________________________________________
+Test Case 4: First Polynomial Degree > Second Polynomial Degree
+Input:
+Order of first polynomial: 3
+Enter polynomial: 0 1 0 2 3
+Order of second polynomial: 2
+Enter polynomial: 0 2 1 4
+
+Output:
+First polynomial: 3x^3 + 2x^2 + 1 = 0
+Second polynomial: 4x^2 + 1x + 2 = 0
+Sum of polynomials: 3x^3 + 6x^2 + 1x + 3 = 0
+Difference of polynomials: -3x^3 + 2x^2 + 1x + 1 = 0
+________________________________________________________________
+Test Case 5: Second Polynomial Degree > First Polynomial Degree
+Input:
+Order of first polynomial: 2
+Enter polynomial: 0 1 3 2
+Order of second polynomial: 4
+Enter polynomial: 8 0 4 0 0 3
+
+Output:
+First polynomial: 2x^2 + 3x + 1 = 0
+Second polynomial: 3x^4 + 4x = 8
+Sum of polynomials: 3x^4 + 2x^2 + 7x + 1 = 8
+Difference of polynomials: 3x^4 - 2x^2 + 1x - 1 = 8
+________________________________________________________________
+
+***/
