@@ -1,150 +1,153 @@
-#include <iostream>
-#include <fstream>
-#include <limits>
-using namespace std;
+#include <iostream>  // Include the input/output stream library
+#include <fstream>   // Include the file stream library for file handling
+#include <limits>    // Include the limits library for handling input validation
+using namespace std; // Use the standard namespace
 
-// Function to display a polynomial
+// Function to display a polynomial in a readable format
 void displayPolynomial(int* pol, int order, int constantTerm) {
-    bool firstTerm = true;
-    for (int i = order; i >= 0; --i) {
-        if (pol[i] != 0) {
-            if (!firstTerm) {
+    bool firstTerm = true; // Flag to check if it's the first term in the polynomial
+    for (int i = order; i >= 0; --i) { // Loop from the highest degree to the lowest
+        if (pol[i] != 0) { // Only display terms with non-zero coefficients
+            if (!firstTerm) { // If it's not the first term, add a "+" or "-" sign
                 cout << (pol[i] > 0 ? " + " : " - ");
-            } else if (pol[i] < 0) {
+            } else if (pol[i] < 0) { // If it's the first term and negative, add a "-" sign
                 cout << "-";
             }
-            cout << abs(pol[i]);
-            if (i > 0) cout << "x" << (i > 1 ? "^" + to_string(i) : "");
-            firstTerm = false;
+            cout << abs(pol[i]); // Display the absolute value of the coefficient
+            if (i > 0) cout << "x" << (i > 1 ? "^" + to_string(i) : ""); // Display "x" and the degree if needed
+            firstTerm = false; // Mark that the first term has been displayed
         }
     }
-    if (firstTerm) cout << "0";
-    cout << " = " << constantTerm << "\n";
+    if (firstTerm) cout << "0"; // If all coefficients are zero, display "0"
+    cout << " = " << constantTerm << "\n"; // Display the constant term after "="
 }
 
 // Function to add two polynomials
 int* Sum_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderSum, int constantTerm1, int constantTerm2, int& constantSum) {
-    orderSum = max(order1, order2);
-    int* sum = new int[orderSum + 1]{0};
-    for (int i = 0; i <= order1; i++) sum[i] += pol1[i];
-    for (int i = 0; i <= order2; i++) sum[i] += pol2[i];
-    constantSum = constantTerm1 + constantTerm2;  // Update constant term
-    return sum;
+    orderSum = max(order1, order2); // The order of the sum is the maximum of the two orders
+    int* sum = new int[orderSum + 1]{0}; // Dynamically allocate memory for the sum polynomial
+    for (int i = 0; i <= order1; i++) sum[i] += pol1[i]; // Add coefficients of the first polynomial
+    for (int i = 0; i <= order2; i++) sum[i] += pol2[i]; // Add coefficients of the second polynomial
+    constantSum = constantTerm1 + constantTerm2; // Update the constant term of the sum
+    return sum; // Return the sum polynomial
 }
 
 // Function to subtract two polynomials (pol2 - pol1)
 int* Difference_of_Polynomials(int* pol1, int order1, int* pol2, int order2, int& orderDiff, int constantTerm1, int constantTerm2, int& constantDiff) {
-    orderDiff = max(order1, order2);
-    int* diff = new int[orderDiff + 1]{0};
-    for (int i = 0; i <= order1; i++) diff[i] -= pol1[i];  // Subtract pol1
-    for (int i = 0; i <= order2; i++) diff[i] += pol2[i];  // Add pol2
-    constantDiff = constantTerm2 - constantTerm1;  // Update constant term
-    return diff;
+    orderDiff = max(order1, order2); // The order of the difference is the maximum of the two orders
+    int* diff = new int[orderDiff + 1]{0}; // Dynamically allocate memory for the difference polynomial
+    for (int i = 0; i <= order1; i++) diff[i] -= pol1[i]; // Subtract coefficients of the first polynomial
+    for (int i = 0; i <= order2; i++) diff[i] += pol2[i]; // Add coefficients of the second polynomial
+    constantDiff = constantTerm2 - constantTerm1; // Update the constant term of the difference
+    return diff; // Return the difference polynomial
 }
 
-// Function to read polynomial input
+// Function to read polynomial input from a stream (file or manual input)
 bool readPolynomial(int*& pol, int& order, int& constantTerm, istream& input) {
-    input >> order;
-    if (order < 0) {
+    input >> order; // Read the order of the polynomial
+    if (order < 0) { // Check if the order is negative
         cout << "Error: Order cannot be negative.\n";
-        return false;
+        return false; // Return false if the order is invalid
     }
-    input >> constantTerm;  // Read the constant term first
-    pol = new int[order + 1]{};
-    for (int i = 0; i <= order; i++) {  // Read coefficients from x^0 to x^order
-        if (!(input >> pol[i])) {
+    input >> constantTerm; // Read the constant term (after '=')
+    pol = new int[order + 1]{}; // Dynamically allocate memory for the polynomial coefficients
+    for (int i = 0; i <= order; i++) { // Read coefficients from x^0 to x^order
+        if (!(input >> pol[i])) { // Check if the input is valid
             cout << "Error: Not enough coefficients provided.\n";
-            delete[] pol;
-            return false;
+            delete[] pol; // Free allocated memory
+            return false; // Return false if there's an error
         }
     }
-    return true;
+    return true; // Return true if the polynomial is read successfully
 }
 
 int main() {
-    int choice;
-    int repeat;
-    cout<<"\n_________________________________________\n"
+    int choice; // Variable to store the user's choice (manual or file input)
+    int repeat; // Variable to store the user's choice to repeat or exit
+    cout << "\n_________________________________________\n"
             "Welcome to Polynomial Operations Program!\n"
             "_________________________________________\n";
 
     do {
-        int order1, order2;
-        int constantTerm1, constantTerm2;
-        int* pol1 = nullptr;
-        int* pol2 = nullptr;
-        bool errorOccurred = false;  // Flag to track if an error occurred
+        int order1, order2; // Variables to store the orders of the two polynomials
+        int constantTerm1, constantTerm2; // Variables to store the constant terms of the two polynomials
+        int* pol1 = nullptr; // Pointer to store the coefficients of the first polynomial
+        int* pol2 = nullptr; // Pointer to store the coefficients of the second polynomial
+        bool errorOccurred = false; // Flag to track if an error occurred during input
 
         cout << "\nChoose input method:\n1. Manual input\n2. Read from file\nEnter choice: ";
-        while (!(cin >> choice) || (choice != 1 && choice != 2)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        while (!(cin >> choice) || (choice != 1 && choice != 2)) { // Validate the user's choice
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
             cout << "Please enter a valid choice (1 or 2): ";
         }
 
         if (choice == 1) {
             // Manual input
             cout << "\nEnter first polynomial order: ";
-            cin >> order1;
-            if (order1 < 0) {
+            cin >> order1; // Read the order of the first polynomial
+            if (order1 < 0) { // Check if the order is negative
                 cout << "Error: Order cannot be negative.\n";
-                errorOccurred = true;
-            }
-            cout << "Enter the constant term (after '=') followed by " << (order1 + 1) << " coefficients (from x^0 to x^" << order1 << "): ";
-            pol1 = new int[order1 + 1]{};
-            cin >> constantTerm1;
-            for (int i = 0; i <= order1; i++) {
-                if (!(cin >> pol1[i])) {
-                    cout << "Error: Not enough coefficients provided.\n";
-                    delete[] pol1;
-                    errorOccurred = true;
-                    break;
+                errorOccurred = true; // Set the error flag
+            } else {
+                cout << "Enter the constant term (after '=') followed by " << (order1 + 1) << " coefficients (from x^0 to x^" << order1 << "): ";
+                pol1 = new int[order1 + 1]{}; // Allocate memory for the first polynomial
+                cin >> constantTerm1; // Read the constant term
+                for (int i = 0; i <= order1; i++) { // Read the coefficients
+                    if (!(cin >> pol1[i])) { // Check if the input is valid
+                        cout << "Error: Not enough coefficients provided.\n";
+                        delete[] pol1; // Free allocated memory
+                        errorOccurred = true; // Set the error flag
+                        break; // Exit the loop
+                    }
                 }
             }
 
-            cout << "Enter second polynomial order: ";
-            cin >> order2;
-            if (order2 < 0) {
-                cout << "Error: Order cannot be negative.\n";
-                delete[] pol1;
-                errorOccurred = true;
-            }
-            cout << "Enter the constant term (after '=') followed by " << (order2 + 1) << " coefficients (from x^0 to x^" << order2 << "): ";
-            pol2 = new int[order2 + 1]{};
-            cin >> constantTerm2;
-            for (int i = 0; i <= order2; i++) {
-                if (!(cin >> pol2[i])) {
-                    cout << "Error: Not enough coefficients provided.\n";
-                    delete[] pol1;
-                    delete[] pol2;
-                    errorOccurred = true;
-                    break;
+            if (!errorOccurred) { // If no error occurred for the first polynomial
+                cout << "Enter second polynomial order: ";
+                cin >> order2; // Read the order of the second polynomial
+                if (order2 < 0) { // Check if the order is negative
+                    cout << "Error: Order cannot be negative.\n";
+                    delete[] pol1; // Free memory allocated for the first polynomial
+                    errorOccurred = true; // Set the error flag
+                } else {
+                    cout << "Enter the constant term (after '=') followed by " << (order2 + 1) << " coefficients (from x^0 to x^" << order2 << "): ";
+                    pol2 = new int[order2 + 1]{}; // Allocate memory for the second polynomial
+                    cin >> constantTerm2; // Read the constant term
+                    for (int i = 0; i <= order2; i++) { // Read the coefficients
+                        if (!(cin >> pol2[i])) { // Check if the input is valid
+                            cout << "Error: Not enough coefficients provided.\n";
+                            delete[] pol1; // Free memory allocated for the first polynomial
+                            delete[] pol2; // Free memory allocated for the second polynomial
+                            errorOccurred = true; // Set the error flag
+                            break; // Exit the loop
+                        }
+                    }
                 }
             }
         } else {
             // File input
-            ifstream inputFile;
-            string filename;
+            ifstream inputFile; // File stream object
+            string filename; // Variable to store the filename
             while (true) {
                 cout << "\nEnter filename: ";
-                cin >> filename;
-                inputFile.open(filename);
-                if (inputFile) break;
+                cin >> filename; // Read the filename
+                inputFile.open(filename); // Open the file
+                if (inputFile) break; // Exit the loop if the file is opened successfully
                 cout << "File not found! Please enter a valid filename.\n";
             }
 
-            if (!readPolynomial(pol1, order1, constantTerm1, inputFile)) {
-                return 1;
-            }
-            if (!readPolynomial(pol2, order2, constantTerm2, inputFile)) {
-                delete[] pol1;
-                return 1;
+            if (!readPolynomial(pol1, order1, constantTerm1, inputFile)) { // Read the first polynomial from the file
+                errorOccurred = true; // Set the error flag
+            } else if (!readPolynomial(pol2, order2, constantTerm2, inputFile)) { // Read the second polynomial from the file
+                delete[] pol1; // Free memory allocated for the first polynomial
+                errorOccurred = true; // Set the error flag
             }
 
-            inputFile.close();
+            inputFile.close(); // Close the file
         }
 
-        if(!errorOccurred) {
+        if (!errorOccurred) { // If no error occurred during input
             // Display the polynomials
             cout << "\nFirst polynomial: ";
             displayPolynomial(pol1, order1, constantTerm1);
@@ -169,24 +172,26 @@ int main() {
             delete[] sum;
             delete[] diff;
         }
+
         // Ask the user if they want to perform another operation
         cout << "_________________________________________\n\n"
                 "Do you want to perform another operation? \n1.Yes\n2.No\nEnter choice (1/2): ";
 
-        while (!(cin >> repeat) || (repeat != 1 && repeat != 2)) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        while (!(cin >> repeat) || (repeat != 1 && repeat != 2)) { // Validate the user's choice
+            cin.clear(); // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
             cout << "Please enter a valid choice (1 or 2): ";
         }
 
+    } while (repeat == 1); // Repeat the loop if the user chooses to continue
 
-    } while (repeat == 1 );
     cout << "\n_____________________________\n"
               "Exiting the Program. Goodbye!\n"
               "_____________________________\n";
 
-    return 0;
+    return 0; // End of the program
 }
+
 /***
 ________________________________________________________________
 Test Case 1:
